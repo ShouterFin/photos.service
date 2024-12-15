@@ -1,6 +1,6 @@
-import { Profile } from "src/profiles/entities/profile.entity";
+import { Category } from "src/categories/entities/category.entity";
 import { User } from "src/users/entities/user.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class Photo {
@@ -26,4 +26,8 @@ export class Photo {
 
     @ManyToOne (() => User, (user) => user.photos)
     user: User;
+
+    @ManyToMany(() => Category, (category) => category.photos, {cascade: true})
+    @JoinTable()
+    categories: Category[];
 }

@@ -1,11 +1,11 @@
 import { IsNotEmpty, IsString } from "class-validator";
 
-export class CreateProfileDto {
+export class CreateCategoryDto {
     @IsString()
     @IsNotEmpty()
-    gender: string;
+    name: string;
 
-    @IsNotEmpty()
     @IsString()
-    photo: string;
+    @IsNotEmpty()
+    description: string;
 }

@@ -17,10 +17,10 @@ export class User {
     @UpdateDateColumn()
     updated_at: Date;
 
-    @OneToOne(() => Profile, (profile) => profile.user, {cascade: true})
+    @OneToOne(() => Profile, (profile) => profile.user, {cascade: true}) // Define the relationship between the User and Profile entities
     @JoinColumn()
     profile: Profile;
 
-    @OneToMany(() => Photo, (photo) => photo.user)
+    @OneToMany(() => Photo, (photo) => photo.user) // Define the relationship between the User and Photo entities
     photos: Photo[];
 }
