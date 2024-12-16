@@ -7,6 +7,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { ProfilesService } from 'src/profiles/profiles.service';
 
 import * as bcrypt from 'bcrypt';
+import { UpdateUserDto } from './dto/update-user.dto';
 @Injectable()
 export class UsersService {
 
@@ -61,5 +62,41 @@ export class UsersService {
             throw new NotFoundException('User not found');
         }
         return {...user};
+    }
+
+    // Update user using updateUserDto
+    async updateUser(username: string, updateUserDto: UpdateUserDto): Promise<User> {
+        const user = await this.usersRepository.findOne({ where: { username }, relations: ['profile'] });
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+    
+        if (updateUserDto.name) {
+            user.name = updateUserDto.name;
+        }
+        if (updateUserDto.password) {
+            user.password = await bcrypt.hash(updateUserDto.password, this.slatRounds);
+        }
+        if (updateUserDto.profile) {
+            if (user.profile) {
+                // Update existing profile
+                user.profile.gender = updateUserDto.profile.gender;
+                user.profile.photo = updateUserDto.profile.photo;
+            } else {
+                // Create new profile
+                user.profile = await this.profilesService.insertProfile(updateUserDto.profile);
+            }
+        }
+    
+        try {
+            return await this.usersRepository.save(user);
+        } catch (error) {
+            throw new InternalServerErrorException("Error while saving user");
+        }
+    }
+
+    async deleteUser(username: string): Promise<void> {
+        const user = await this.usersRepository.findOne({ where: { username } });
+        await this.usersRepository.remove(user);
     }
 }

@@ -1,5 +1,5 @@
 import { Photo } from "src/photos/entities/photo.entity";
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class Category {
@@ -11,6 +11,11 @@ export class Category {
 
     @Column()
     description: string;
+
+    @CreateDateColumn()
+    created_at: Date;
+    @UpdateDateColumn()
+    updated_at: Date;
 
     @ManyToMany(() => Photo, (photo) => photo.categories)
     photos: Photo[];
