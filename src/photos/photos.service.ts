@@ -43,8 +43,8 @@ export class PhotosService {
     }
 
     // update photo by id using updatephotoDto
-    async updatePhoto(id: string, updatePhotoDto: UpdatePhotoDto): Promise<Photo> {
-        const photo = await this.photosRepository.findOne({where: {id}});
+    async updatePhoto(name: string, updatePhotoDto: UpdatePhotoDto): Promise<Photo> {
+        const photo = await this.photosRepository.findOne({where: {name}});
         if (!photo) {
             throw new NotFoundException('Photo not found');
         }
@@ -73,8 +73,8 @@ export class PhotosService {
         return await this.photosRepository.save(photo);
     }
 
-    async deletePhoto(id: string): Promise<Photo> {
-        const photo = await this.photosRepository.findOne({where: {id}});
+    async deletePhoto(name: string): Promise<Photo> {
+        const photo = await this.photosRepository.findOne({where: {name}});
         if (!photo) {
             throw new NotFoundException('Photo not found');
         }
