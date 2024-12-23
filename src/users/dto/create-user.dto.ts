@@ -1,19 +1,24 @@
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { CreateProfileDto } from "src/profiles/dto/create-profile.dto";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
-    @IsEmail()
-    @IsNotEmpty()
-    username: string;
+  @ApiProperty({ example: 'user@example.com', description: 'The email of the user' })
+  @IsEmail()
+  @IsNotEmpty()
+  username: string;
 
-    @IsNotEmpty()
-    @IsString()
-    password: string;
+  @ApiProperty({ example: 'password123', description: 'The password of the user' })
+  @IsNotEmpty()
+  @IsString()
+  password: string;
 
-    @IsNotEmpty()
-    @IsString()
-    name: string;
+  @ApiProperty({ example: 'John Doe', description: 'The name of the user' })
+  @IsNotEmpty()
+  @IsString()
+  name: string;
 
-    @IsOptional()
-    profile?: CreateProfileDto;
+  @ApiProperty({ type: CreateProfileDto, required: false, description: 'The profile of the user' })
+  @IsOptional()
+  profile?: CreateProfileDto;
 }

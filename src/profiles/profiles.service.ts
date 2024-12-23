@@ -14,4 +14,8 @@ export class ProfilesService {
         profile.photo = createProfileDto.photo;
         return await this.usersRepository.save(profile);
     }
+
+    async deleteProfile(id: string): Promise<void> {
+        await this.usersRepository.delete(id);
+    }
 }

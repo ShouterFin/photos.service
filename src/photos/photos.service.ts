@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Photo } from './entities/photo.entity';
 import { Repository } from 'typeorm';
@@ -10,7 +10,12 @@ import { CategoriesService } from 'src/categories/categories.service';
 
 @Injectable()
 export class PhotosService {
-    constructor(@InjectRepository(Photo) private readonly photosRepository: Repository<Photo>, private readonly usersService: UsersService, private readonly categoriesService: CategoriesService) {}
+    constructor(
+        @InjectRepository(Photo) private readonly photosRepository: Repository<Photo>,
+        @Inject(forwardRef(() => UsersService))
+        private readonly usersService: UsersService, 
+        private readonly categoriesService: CategoriesService
+    ) {}
 
     async insertPhoto(createPhotoDto: CreatePhotoDto): Promise<Photo> {
         const user = await this.usersService.findUserByEmail(createPhotoDto.owner);
@@ -39,7 +44,11 @@ export class PhotosService {
     }
 
     async getPhotos(): Promise<Photo[]> {
-        return await this.photosRepository.find({relations: ['user']});
+        const photos = await this.photosRepository.find({relations: ['user']});
+        // photos.forEach(photo => {
+        //     photo.user.password = "";
+        // });
+        return photos;
     }
 
     // update photo by id using updatephotoDto

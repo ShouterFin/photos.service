@@ -36,8 +36,8 @@ export class CategoriesService {
   }
 
   // delete category
-  async deleteCategory(id: number): Promise<Category> {
-    const category = await this.categoriesRepository.findOne({ where: { id } });
+  async deleteCategory(name: string): Promise<Category> {
+    const category = await this.categoriesRepository.findOne({ where: { name } });
     if (!category) {
       throw new NotFoundException('Category not found');
     }

@@ -1,18 +1,24 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { Profile } from 'src/profiles/entities/profile.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ProfilesService } from 'src/profiles/profiles.service';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { PhotosService } from 'src/photos/photos.service';
 
 import * as bcrypt from 'bcrypt';
-import { UpdateUserDto } from './dto/update-user.dto';
 @Injectable()
 export class UsersService {
 
     private slatRounds = 10;
-    constructor(@InjectRepository(User) private readonly usersRepository: Repository<User>, private readonly profilesService: ProfilesService) {}
+    constructor(
+        @InjectRepository(User) private readonly usersRepository: Repository<User>, 
+        private readonly profilesService: ProfilesService,
+        @Inject(forwardRef(() => PhotosService))
+        private readonly photosService: PhotosService
+    ) {}
 
     async insertUser(createUserDto: CreateUserDto): Promise<User> {
         let profile: Profile = null;
@@ -96,7 +102,21 @@ export class UsersService {
     }
 
     async deleteUser(username: string): Promise<void> {
-        const user = await this.usersRepository.findOne({ where: { username } });
+        const user = await this.usersRepository.findOne({ where: { username }, relations: ['profile', 'photos'] });
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
         await this.usersRepository.remove(user);
+        
+        if (user.photos && user.photos.length > 0) {
+            for (const photo of user.photos) {
+                await this.photosService.deletePhoto(photo.name);
+            }
+        }
+        
+        if (user.profile) {
+            await this.profilesService.deleteProfile(user.profile.id);
+        }
+        
     }
 }
